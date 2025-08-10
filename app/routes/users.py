@@ -3,7 +3,8 @@ from typing import Annotated, Dict
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
-from jwt.exceptions import InvalidTokenError
+# from jwt.exceptions import InvalidTokenError
+InvalidTokenError = jwt.InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.base import get_db

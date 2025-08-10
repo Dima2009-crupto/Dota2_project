@@ -2,6 +2,7 @@ from typing import Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from fastapi import HTTPException, status
 
 from app.db.users.models import User
 from app.pydantic_models.users import UserModel
@@ -18,7 +19,15 @@ async def sign_up(user_model: UserModel, db: AsyncSession) -> None:
     await db.commit()
 
 
-async def sign_in(username: str, password: str, db: AsyncSession) -> Optional[str]:
-    user: Optional[User] = await db.scalar(select(User).filter_by(username=username))
-    if user:
-        return user.get_token(pwd=password)
+async def sign_in(username: str, password: str, db: AsyncSession) -> str:
+    user = await db.scalar(select(User).where(User.username == username))
+    
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Користувач не знайдений")
+    
+    token = user.get_token(password)
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Невірний пароль")
+
+    return token
+
