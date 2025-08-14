@@ -3,8 +3,7 @@ from typing import Annotated, Dict
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
-# from jwt.exceptions import InvalidTokenError
-InvalidTokenError = jwt.InvalidTokenError
+from jwt.exceptions import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.base import get_db
@@ -15,7 +14,7 @@ from app.db.users import db_actions
 from app.db.users.models import User
 
 
-users_route = APIRouter(prefix="/users", tags=["User"])
+users_route = APIRouter(prefix="/users", tags=["Users"])
 
 
 async def get_user_id(token: Annotated[str, Depends(OAuth2PasswordBearer(tokenUrl="/users/token/"))]) -> str:
@@ -29,6 +28,8 @@ async def get_user_id(token: Annotated[str, Depends(OAuth2PasswordBearer(tokenUr
 
     except InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    
+
 
 
 @users_route.post("/", status_code=status.HTTP_201_CREATED, summary="Create user")
